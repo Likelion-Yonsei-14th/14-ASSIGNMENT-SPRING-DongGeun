@@ -64,8 +64,14 @@ public class ProductService {
     }
 
     private void validateProduct(ProductUpdateRequest request) {
-        if (request == null) {
-            throw new CustomException(ErrorCode.INVALID_PRODUCT_CONTENT);
+        if (request.getName() == null || request.getName().trim().isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_PRODUCT_NAME);
+        }
+        if (request.getDescription() == null || request.getDescription().trim().isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_PRODUCT_DESCRIPTION);
+        }
+        if (request.getPrice() == 0 || request.getPrice() <= 0) {
+            throw new CustomException(ErrorCode.INVALID_PRODUCT_PRICE);
         }
     }
 }
