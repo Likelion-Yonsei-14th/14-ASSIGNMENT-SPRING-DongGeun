@@ -1,13 +1,12 @@
 package com.example.shop_app.dto;
 
 import com.example.shop_app.domain.Product;
-import lombok.AllArgsConstructor;
+import java.time.LocalDateTime;
+import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-
 @Getter
-@AllArgsConstructor
+@Builder
 public class ProductResponse {
     
     private Long id;
@@ -20,15 +19,15 @@ public class ProductResponse {
     private LocalDateTime updatedAt;
 
     public static ProductResponse from(Product product) {
-        return new ProductResponse(
-                product.getId(),
-                product.getMember().getId(),
-                product.getMember().getNickname(),
-                product.getName(),
-                product.getDescription(),
-                product.getPrice(),
-                product.getCreatedAt(),
-                product.getUpdatedAt()
-        );
+        return ProductResponse.builder()
+                .id(product.getId())
+                .sellerId(product.getMember().getId())
+                .sellerNickname(product.getMember().getNickname())
+                .name(product.getName())
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .createdAt(product.getCreatedAt())
+                .updatedAt(product.getUpdatedAt())
+                .build();
     }
 }

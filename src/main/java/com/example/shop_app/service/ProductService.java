@@ -22,6 +22,8 @@ public class ProductService {
     private final MemberService memberService;
 
     public ProductResponse createProduct(ProductCreateRequest request) {
+        validateProduct(request.getName(), request.getDescription(), request.getPrice());
+
         Member member = memberService.findById(request.getSellerId());
 
         Product product = Product.create(member, request.getName(), request.getDescription(),request.getPrice());
@@ -32,7 +34,7 @@ public class ProductService {
 
     public ProductResponse getProduct(Long productId) {
         Product product = productRepository.findById(productId)
-            .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
+            .orElseThrow(ProductNotFoundException::new);
 
         return ProductResponse.from(product);
     }
@@ -45,12 +47,12 @@ public class ProductService {
     }
 
     public ProductResponse updateProduct(Long productId, ProductUpdateRequest request) {
-        validateProduct(request);
+        validateProduct(request.getName(), request.getDescription(), request.getPrice());
 
         Product product = productRepository.findById(productId)
             .orElseThrow(ProductNotFoundException::new);
 
-        product.updateInfo(request.getName(), request.getDescription(), request.getPrice());
+        product.updateProduct(request.getName(), request.getDescription(), request.getPrice());
         Product savedProduct = productRepository.save(product);
 
         return ProductResponse.from(savedProduct);
@@ -63,14 +65,14 @@ public class ProductService {
         productRepository.delete(product);
     }
 
-    private void validateProduct(ProductUpdateRequest request) {
-        if (request.getName() == null || request.getName().trim().isEmpty()) {
+    private void validateProduct(String name, String description, int price) {
+        if (name == null || name.isBlank()) {
             throw new CustomException(ErrorCode.INVALID_PRODUCT_NAME);
         }
-        if (request.getDescription() == null || request.getDescription().trim().isEmpty()) {
+        if (description == null || description.isBlank()) {
             throw new CustomException(ErrorCode.INVALID_PRODUCT_DESCRIPTION);
         }
-        if (request.getPrice() == 0 || request.getPrice() <= 0) {
+        if (price <= 0) {
             throw new CustomException(ErrorCode.INVALID_PRODUCT_PRICE);
         }
     }

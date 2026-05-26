@@ -1,13 +1,14 @@
 package com.example.shop_app.controller;
 
+import com.example.shop_app.dto.DeleteResponse;
 import com.example.shop_app.dto.ProductCreateRequest;
 import com.example.shop_app.dto.ProductResponse;
 import com.example.shop_app.dto.ProductUpdateRequest;
 import com.example.shop_app.service.ProductService;
-import lombok.RequiredArgsConstructor;
 
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ public class ProductController {
     
     private final ProductService productService;
 
+    @Operation(summary = "상품 생성")
     @PostMapping
     public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductCreateRequest request) {
         ProductResponse response = productService.createProduct(request);
@@ -35,7 +37,14 @@ public class ProductController {
             .body(response);
     }
 
+    @Operation(summary = "상품 단건 조회")
+    @GetMapping("/{productId}")
+    public ResponseEntity<ProductResponse> getProduct(@PathVariable("productId") Long productId) {
+        ProductResponse response = productService.getProduct(productId);
+        return ResponseEntity.ok(response);
+    }
 
+    @Operation(summary = "상품 전체 조회")
     @GetMapping
     public ResponseEntity<List<ProductResponse>> getAllProducts() {
         List<ProductResponse> response = productService.getAllProducts();
@@ -43,6 +52,7 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "상품 수정")
     @PatchMapping("/{productId}")
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable("productId") Long productId,
@@ -53,12 +63,11 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "상품 삭제")
     @DeleteMapping("/{productId}")
-    public ResponseEntity<Map<String, String>> deleteProduct(@PathVariable("productId") Long productId) {
+    public ResponseEntity<DeleteResponse> deleteProduct(@PathVariable("productId") Long productId) {
         productService.deleteProduct(productId);
-
-        return ResponseEntity.ok(
-                Map.of("message", "상품이 삭제되었습니다.")
-        );
+        DeleteResponse response = new DeleteResponse("상품이 성공적으로 삭제되었습니다.");
+        return ResponseEntity.ok(response);
     }
 }

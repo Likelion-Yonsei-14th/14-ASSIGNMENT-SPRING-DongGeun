@@ -12,6 +12,9 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     public Member findById(Long memberId) {
+        if (memberId == null) {
+            throw new MemberNotFoundException();
+        }
         return memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
     }
