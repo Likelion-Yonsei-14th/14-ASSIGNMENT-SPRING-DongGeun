@@ -24,7 +24,7 @@ public class ProductService {
     public ProductResponse createProduct(ProductCreateRequest request) {
         validateProduct(request.getName(), request.getDescription(), request.getPrice());
 
-        Member member = memberService.findById(request.getSellerId());
+        Member member = memberService.findMemberById(request.getSellerId());
 
         Product product = Product.create(member, request.getName(), request.getDescription(),request.getPrice());
         Product savedProduct = productRepository.save(product);
